@@ -11,14 +11,13 @@ pip install "git+https://github.com/yanggs07/answer-artifact-kit.git"
 Use in an artifact script:
 
 ```python
-from answer_artifact_kit import run_case_cli
+from answer_artifact_kit import run_case_cli_from_url
 
-ANSWER_ID = 123
-SIGN = "..."
+SOURCE_URL = "https://yitang-admin.yitang.top/answer/detail?id=123&sign=..."
 CASE_TEXT = "..."
 
 if __name__ == "__main__":
-    raise SystemExit(run_case_cli(ANSWER_ID, SIGN, CASE_TEXT))
+    raise SystemExit(run_case_cli_from_url(SOURCE_URL, CASE_TEXT))
 ```
 
 The script supports:

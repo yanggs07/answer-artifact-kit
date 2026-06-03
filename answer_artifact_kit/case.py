@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 
 
@@ -29,6 +30,23 @@ class AnswerCaseArtifact:
         self.case_text = case_text
         self.host = host.rstrip("/")
         self.prompt_template = prompt_template
+
+    @classmethod
+    def from_url(cls, source_url, case_text, prompt_template=DEFAULT_PROMPT_TEMPLATE):
+        parsed = urllib.parse.urlparse(source_url)
+        query = urllib.parse.parse_qs(parsed.query)
+        answer_id = first_query_value(query, "id")
+        sign = first_query_value(query, "sign")
+        if not answer_id or not sign:
+            raise ValueError("source_url must contain id and sign query params")
+        host = f"{parsed.scheme}://{parsed.netloc}"
+        return cls(
+            answer_id=answer_id,
+            sign=sign,
+            case_text=case_text,
+            host=host,
+            prompt_template=prompt_template,
+        )
 
     def source_url(self):
         return f"{self.host}/answer/detail?id={self.answer_id}&sign={self.sign}"
@@ -135,6 +153,19 @@ def run_case_cli(answer_id, sign, case_text, host=DEFAULT_HOST, prompt_template=
         host=host,
         prompt_template=prompt_template,
     ).main(argv)
+
+
+def run_case_cli_from_url(source_url, case_text, prompt_template=DEFAULT_PROMPT_TEMPLATE, argv=None):
+    return AnswerCaseArtifact.from_url(
+        source_url=source_url,
+        case_text=case_text,
+        prompt_template=prompt_template,
+    ).main(argv)
+
+
+def first_query_value(query, name):
+    value = query.get(name, [""])[0]
+    return value.strip() if isinstance(value, str) else value
 
 
 def question_sort_key(question_id):
