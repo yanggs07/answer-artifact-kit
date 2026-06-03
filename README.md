@@ -20,6 +20,18 @@ if __name__ == "__main__":
     raise SystemExit(run_case_cli_from_url(SOURCE_URL, CASE_TEXT))
 ```
 
+For tag artifacts:
+
+```python
+from answer_artifact_kit import run_tags_cli_from_url
+
+SOURCE_URL = "https://yitang-admin.yitang.top/answer/detail?id=123&sign=..."
+TAGS = ["标签1", "标签2", "标签3"]
+
+if __name__ == "__main__":
+    raise SystemExit(run_tags_cli_from_url(SOURCE_URL, TAGS))
+```
+
 The script supports:
 
 ```bash
