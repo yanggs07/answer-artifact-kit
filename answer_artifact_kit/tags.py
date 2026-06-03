@@ -31,7 +31,15 @@ class AnswerTagsArtifact:
         return ",".join(self.tags)
 
     def json_payload(self):
-        return self.tags
+        return {
+            "tags": self.tags,
+            "meta": self.meta(),
+        }
+
+    def meta(self):
+        meta = json.loads(self.meta_json) if self.meta_json else self.answer.fetch_meta()
+        meta["artifactType"] = "answer_tags"
+        return meta
 
     def reprocess(self, user_prompt):
         prompt = self.prompt_template.format(

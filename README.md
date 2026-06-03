@@ -52,6 +52,24 @@ python case.py --json
 python case.py --prompt "rewrite this case..."
 ```
 
+Case JSON shape:
+
+```json
+{
+  "caseText": "...",
+  "meta": {}
+}
+```
+
+Tag JSON shape:
+
+```json
+{
+  "tags": ["标签1", "标签2", "标签3"],
+  "meta": {}
+}
+```
+
 LLM configuration is read from env:
 
 ```bash
