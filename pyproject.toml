@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "answer-artifact-kit"
+version = "0.1.0"
+description = "Tiny CLI helpers for answer-derived text artifacts."
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  { name = "Yitang" }
+]
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["."]
