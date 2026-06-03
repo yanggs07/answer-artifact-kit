@@ -5,7 +5,7 @@ Tiny helpers for answer-derived text artifacts.
 Install from GitHub:
 
 ```bash
-pip install "git+ssh://git@github.com/yanggs07/answer-artifact-kit.git"
+pip install "git+https://github.com/yanggs07/answer-artifact-kit.git"
 ```
 
 Use in an artifact script:
