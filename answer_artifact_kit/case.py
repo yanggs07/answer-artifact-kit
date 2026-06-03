@@ -24,15 +24,16 @@ DEFAULT_PROMPT_TEMPLATE = """我们对这份作业得出了这样的案例结果
 
 
 class AnswerCaseArtifact:
-    def __init__(self, answer_id, sign, case_text, host=DEFAULT_HOST, prompt_template=DEFAULT_PROMPT_TEMPLATE):
+    def __init__(self, answer_id, sign, case_text, host=DEFAULT_HOST, prompt_template=DEFAULT_PROMPT_TEMPLATE, meta_json=None):
         self.answer_id = int(answer_id)
         self.sign = sign
         self.case_text = case_text
         self.host = host.rstrip("/")
         self.prompt_template = prompt_template
+        self.meta_json = meta_json
 
     @classmethod
-    def from_url(cls, source_url, case_text, prompt_template=DEFAULT_PROMPT_TEMPLATE):
+    def from_url(cls, source_url, case_text, prompt_template=DEFAULT_PROMPT_TEMPLATE, meta_json=None):
         parsed = urllib.parse.urlparse(source_url)
         query = urllib.parse.parse_qs(parsed.query)
         answer_id = first_query_value(query, "id")
@@ -46,6 +47,7 @@ class AnswerCaseArtifact:
             case_text=case_text,
             host=host,
             prompt_template=prompt_template,
+            meta_json=meta_json,
         )
 
     def source_url(self):
@@ -55,6 +57,13 @@ class AnswerCaseArtifact:
         return f"{self.host}/answer/view?id={self.answer_id}"
 
     def build_json_payload(self):
+        meta = json.loads(self.meta_json) if self.meta_json else self.fetch_meta()
+        return {
+            "caseText": self.case_text,
+            "meta": meta,
+        }
+
+    def fetch_meta(self):
         answer = self.fetch_answer()
         data = answer.get("data", {})
         meta = {
@@ -67,10 +76,7 @@ class AnswerCaseArtifact:
         for key in ["id", "ssoId", "submitTime", "status", "score", "textCount", "textCountReal"]:
             if key in data:
                 meta[key] = data[key]
-        return {
-            "caseText": self.case_text,
-            "meta": meta,
-        }
+        return meta
 
     def fetch_answer(self):
         request = urllib.request.Request(self.source_url(), method="GET")
@@ -145,21 +151,23 @@ class AnswerCaseArtifact:
         return 0
 
 
-def run_case_cli(answer_id, sign, case_text, host=DEFAULT_HOST, prompt_template=DEFAULT_PROMPT_TEMPLATE, argv=None):
+def run_case_cli(answer_id, sign, case_text, host=DEFAULT_HOST, prompt_template=DEFAULT_PROMPT_TEMPLATE, meta_json=None, argv=None):
     return AnswerCaseArtifact(
         answer_id=answer_id,
         sign=sign,
         case_text=case_text,
         host=host,
         prompt_template=prompt_template,
+        meta_json=meta_json,
     ).main(argv)
 
 
-def run_case_cli_from_url(source_url, case_text, prompt_template=DEFAULT_PROMPT_TEMPLATE, argv=None):
+def run_case_cli_from_url(source_url, case_text, prompt_template=DEFAULT_PROMPT_TEMPLATE, meta_json=None, argv=None):
     return AnswerCaseArtifact.from_url(
         source_url=source_url,
         case_text=case_text,
         prompt_template=prompt_template,
+        meta_json=meta_json,
     ).main(argv)
 
 
